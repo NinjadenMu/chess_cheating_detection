@@ -10,6 +10,6 @@
 
  Of course, the actual mechanics of this chess cheating detection program are a bit more complicated, so please check out my video to learn more!
 
-### What this repo provides
+## What this repo provides
  I've included 3000+ anonymized chess.com rapid games played by honest human players rated in the neighborhood of 2000 Elo.  I've also included Stockfish 17 NNUE's analysis of each game at depth = 12 and pv = 20 and the model parameters fit to this data.
  
