@@ -1,0 +1,17 @@
+{
+    "data": {
+        "data_path": "./anonymized_train_data",
+        "output_path": "./processed_train_data",
+        "data_is_processed": 1
+    },
+    
+    "engine": {
+        "depth": 12,
+        "pv": 20
+    },
+
+    "model": {
+        "opening_length": 5,
+        "ignore_threshold": 350
+    }
+}

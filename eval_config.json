@@ -1,0 +1,21 @@
+{
+    "data": {
+        "data_path": "./eval_data",
+        "output_path": "./processed_eval_data",
+        "data_is_processed": 1
+    },
+    
+    "engine": {
+        "depth": 12,
+        "pv": 20
+    },
+
+    "model": {
+        "opening_length": 5,
+        "ignore_threshold": 350,
+        "s": 0.31,
+        "c": 0.65,
+        "mm_sd_correctors": [1.14, 1.05, 1.04, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        "ae_sd_corrector": 1.4
+    }
+}
