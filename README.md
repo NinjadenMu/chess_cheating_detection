@@ -8,10 +8,10 @@
 
  This program works on a similar idea to flag chess cheating.  A model is trained on thousands of human games to predict how an honest player might play any given position.  This model is then used to project a probability distribution of how an honest player would perform over the course of an entire game, where performance is quantified by several "aggregate statistics" (chief among which are "move match" and "aggregate error" as measured against an engine.)  To screen a specific player for cheating, we compute the aggregate statistics they achieved over a game (or many games.)  Then, we can use our model's projections to check the probability of an honest player achieving those aggregate statistics.  If the probability is extremely low (say p < 0.001), we might claim to have statistical evidence that the player cheated.
 
- Importantly, the model can project different performances for different games because it takes into account the specific positions in that game.  A very good aggregate error (you can think of this as similar to chess.com's accuracy metric) isn't necessarily suspicious if the opponent played terribly, while a less good aggregate error might nonetheless be suspicious if the game was incredibly complex.  
+ Importantly, the model can project **different performances for different games** because it takes into account the specific positions in that game.  A very good aggregate error (you can think of this as similar to chess.com's accuracy metric) isn't necessarily suspicious if the opponent played terribly (and consequently made it easy for you to find good moves), while a less good aggregate error might nonetheless be suspicious if the game was incredibly complex.  
 
  Of course, the actual mechanics of this chess cheating detection program are a bit more complicated, so please check out my video to learn more!
 
 ## What this repo provides
- I've included 3000+ anonymized chess.com rapid games played by honest human players rated in the neighborhood of 2000 Elo.  I've also included Stockfish 17 NNUE's analysis of each game at depth = 12 and pv = 20 and the model parameters fit to this data.
+ I've included 3000+ anonymized chess.com rapid games played by honest human players rated in the neighborhood of 2000 Elo.  I've also included Stockfish 17 NNUE's analysis of each game at depth = 12 and pv = 20, and the model parameters fit to this data.
  
