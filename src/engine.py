@@ -1,5 +1,6 @@
 from stockfish import Stockfish
 
+
 class Engine:
     def __init__(self, depth, pv):
         self.engine = Stockfish(depth = depth)

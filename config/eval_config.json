@@ -1,7 +1,7 @@
 {
     "data": {
-        "data_path": "./eval_data",
-        "output_path": "./processed_eval_data",
+        "raw_data_path": "eval_data",
+        "processed_data_path": "processed_eval_data",
         "data_is_processed": 1
     },
     
@@ -13,6 +13,8 @@
     "model": {
         "opening_length": 5,
         "ignore_threshold": 350,
+        "pv": 20,
+        "model_params_path": "model_params/model_params.json",
         "s": 0.31,
         "c": 0.65,
         "mm_sd_correctors": [1.14, 1.05, 1.04, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],

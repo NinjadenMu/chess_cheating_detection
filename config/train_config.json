@@ -1,7 +1,7 @@
 {
     "data": {
-        "data_path": "./anonymized_train_data",
-        "output_path": "./processed_train_data",
+        "raw_data_path": "anonymized_train_data",
+        "processed_data_path": "processed_train_data",
         "data_is_processed": 1
     },
     
@@ -12,6 +12,19 @@
 
     "model": {
         "opening_length": 5,
-        "ignore_threshold": 350
+        "ignore_threshold": 350,
+        "pv": 20
+    },
+
+    "train": {
+        "s_bounds": [0.2, 0.4],
+        "c_bounds": [0.55, 0.75],
+        "s_step": 0.01,
+        "c_step": 0.01,
+        "ORF": 1,
+        "MM": 1,
+        "AE": 1,
+        "MM_AE": 1,
+        "log_dir": "logs"
     }
 }
