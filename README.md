@@ -11,7 +11,7 @@
  Importantly, the model can project **different performances for different games** because it takes into account the specific positions in that game.  A very good aggregate error (you can think of this as similar to chess.com's accuracy metric) isn't necessarily suspicious if the opponent played terribly (and consequently made it easy for you to find good moves), while a less good aggregate error might nonetheless be suspicious if the game was incredibly complex.  
 
  Of course, the actual mechanics of this chess cheating detection program are a bit more complicated, so please check out my video to learn more!  
- You may also want to check out these papers by Ken Regan: <br>[Intrinsic Performance Ratings](https://cse.buffalo.edu/~regan/papers/pdf/ReHa11c.pdf) <br> [Psychometric Modeling of Decision Making Via Game Play](https://cse.buffalo.edu/~regan/papers/pdf/ReBiNF13.pdf)
+ You may also want to check out these papers by Dr. Ken Regan: <br>[Intrinsic Performance Ratings](https://cse.buffalo.edu/~regan/papers/pdf/ReHa11c.pdf) <br> [Psychometric Modeling of Decision Making Via Game Play](https://cse.buffalo.edu/~regan/papers/pdf/ReBiNF13.pdf)
 
 ## What this repo provides
  I've included 3000+ anonymized chess.com rapid games played by honest human players rated in the neighborhood of 2000 Elo.  I've also included Stockfish 17 NNUE's analysis of each game at depth = 12 and pv = 20, and the model parameters fit to this data.
