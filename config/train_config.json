@@ -11,20 +11,22 @@
     },
 
     "model": {
-        "opening_length": 5,
+        "opening_length_doubled": 10,
         "ignore_threshold": 350,
         "pv": 20
     },
 
     "train": {
-        "s_bounds": [0.2, 0.4],
-        "c_bounds": [0.55, 0.75],
+        "optimizer": "nelder-mead",
+        "s_bounds": [0.29, 0.39],
+        "c_bounds": [0.55, 0.69],
         "s_step": 0.01,
         "c_step": 0.01,
         "ORF": 1,
         "MM": 1,
         "AE": 1,
         "MM_AE": 1,
-        "log_dir": "logs"
+        "log_dir": "logs",
+        "save_dir": "model_params"
     }
 }
