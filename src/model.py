@@ -19,25 +19,15 @@ class Model:
         self.s = model_params['s']
         self.c = model_params['c']
 
-        # sd_correctors adjusts projected standard deviations by a scalar
-        # compensates for the sparse dependence between moves that violates the model's assumption of independence between moves
-        self.mm_sd_correctors = model_params['mm_sd_corrrectors']
-        self.ae_sd_corrector = model_params['ae_sd_corrector']
-
     # configures model to training mode
     def train(self):
         self.s = None
         self.c = None
 
-        self.mm_sd_correctors = [1 for rank in range(20)]
-        self.ae_sd_corrector = 1
-
     def save(self, save_path = None):
         model_params = {
             's': self.s,
-            'c': self.c,
-            'mm_sd_correctors': self.mm_sd_correctors,
-            'ae_sd_corrector': self.ae_sd_corrector
+            'c': self.c
         }
 
         if save_path != None:
@@ -132,9 +122,9 @@ class Model:
                 var += probability * (1 - probability) # thanks Bernoulli :)
 
         if proportion:
-            return mean / num_moves, var ** 0.5 / num_moves * self.mm_sd_correctors[rank]
+            return mean / num_moves, var ** 0.5 / num_moves
 
-        return mean, var ** 0.5 * self.mm_sd_correctors[rank]
+        return mean, var ** 0.5
     
     # returns mm for all ranked moves in a game
     def calculate_mms(self, processed_game, proportion = False):
@@ -170,10 +160,8 @@ class Model:
                     means[rank] += probabilities[rank]
                     vars[rank] += probabilities[rank] * (1 - probabilities[rank])
 
-        for rank in range(self.pv):
-            vars[rank] = vars[rank] ** 0.5 * self.mm_sd_correctors[rank]
-
-            if proportion:
+        if proportion:
+            for rank in range(self.pv):
                 means[rank] /= num_moves
                 vars[rank] /= num_moves
         
@@ -219,7 +207,7 @@ class Model:
                     var -= move_error ** 2
                     mean += move_error
 
-        return mean / num_moves, var ** 0.5 / num_moves * self.ae_sd_corrector
+        return mean / num_moves, var ** 0.5 / num_moves
     
 if __name__ == '__main__':
     model = Model(0.31, 0.65, [1.14 for i in range(20)], 1.4, 5, 350, 20)

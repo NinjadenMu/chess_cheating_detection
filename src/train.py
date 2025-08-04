@@ -1,8 +1,6 @@
-import math
+import json
 import os
-import pickle
 from scipy.optimize import minimize
-import sys
 
 from data_processor import process_data
 from engine import Engine
@@ -11,8 +9,9 @@ from model import Model
 import utils
 
 
-config_path = f'{utils.get_root()}/config/train_config.json'
+config_dir = f'{utils.get_root()}/config'
 
+config_path = f'{config_dir}/train_config.json'
 config = utils.load_config(config_path)
 
 processed_data_path = config['data']['processed_data_path']
@@ -22,6 +21,7 @@ if not config['data']['data_is_processed']:
     engine = Engine(config['engine']['depth'], config['engine']['pv'])
 
     print('For large amounts of games, data processing may take several hours\n')
+
     process_data(config['data']['raw_data_path'], processed_data_path, engine)
 
 data_files = os.listdir(processed_data_path)
@@ -33,70 +33,92 @@ for data_file in data_files:
         processed_games = utils.load_processed_games(f'{processed_data_path}/{data_file}')
 
         for game in processed_games:
-            super_game.extend(game[config['model']['opening_length_doubled']:])
+            # add all non-opening moves to super game
+            super_game.extend(game[config['model']['opening_length'] * 2:])
 
-if not os.path.exists(config['train']['log_dir']):
-    os.makedirs(config['train']['log_dir'])
+if not os.path.exists(config['train']['log_path']):
+    os.makedirs(config['train']['log_path'])
 
-# initialize training hyperparameters
-s_bounds = config['train']['s_bounds']
-c_bounds = config['train']['c_bounds']
-
-s_step = config['train']['s_step']
-c_step = config['train']['c_step']
-
-#initialize model parameters
-s = s_bounds[0]
-c = c_bounds[0]
+if not os.path.exists(config['train']['save_path']):
+    os.makedirs(config['train']['save_path'])
 
 # initialize model
 model_config = config['model']
-model = Model(0, model_config['ignore_threshold'], model_config['pv'])
-model.train() # set model to training mode
+opening_length = 0 # because opening moves were already removed from super_game, the model shouldn't ignore any moves
+model = Model(opening_length, model_config['ignore_threshold'], model_config['pv'])
 
+# build loss functions for each specified loss
 loss_funcs = {}
-projection_funcs = {}
+
 if config['train']['ORF']:
     targets = model.calculate_mms(super_game, True)
 
-    loss = MSELoss(targets, False)
+    loss_func = MSELoss(targets, False)
 
-    model = Model(0, model_config['ignore_threshold'], model_config['pv'])
-    model.train() # set model to training mode
+    trainable_model = Model(opening_length, model_config['ignore_threshold'], model_config['pv'])
+    trainable_model.train() # set model to training mode
 
-    loss_funcs['ORF'] = LossWrapper(model, loss, 'ORF', super_game)
+    loss_funcs['ORF'] = LossWrapper(trainable_model, loss_func, 'ORF', super_game)
 
 if config['train']['MM']:
     targets = [model.calculate_mm(super_game, True)]
 
-    loss = MSELoss(targets, False)
+    loss_func = MSELoss(targets, False)
 
-    model = Model(0, model_config['ignore_threshold'], model_config['pv'])
-    model.train() # set model to training mode
+    trainable_model = Model(opening_length, model_config['ignore_threshold'], model_config['pv'])
+    trainable_model.train() # set model to training mode
 
-    loss_funcs['MM'] = LossWrapper(model, loss, 'MM', super_game)
+    loss_funcs['MM'] = LossWrapper(trainable_model, loss_func, 'MM', super_game)
 
 if config['train']['AE']:
     targets = [model.calculate_ae(super_game)]
 
-    loss = MSELoss(targets, False)
+    loss_func = MSELoss(targets, False)
 
-    model = Model(0, model_config['ignore_threshold'], model_config['pv'])
-    model.train() # set model to training mode
+    trainable_model = Model(opening_length, model_config['ignore_threshold'], model_config['pv'])
+    trainable_model.train() # set model to training mode
 
-    loss_funcs['AE'] = LossWrapper(model, loss, 'AE', super_game)
+    loss_funcs['AE'] = LossWrapper(trainable_model, loss_func, 'AE', super_game)
 
 if config['train']['MM_AE']:
     targets = [model.calculate_mm(super_game, True), model.calculate_ae(super_game)]
 
-    loss = MSELoss(targets, True)
+    loss_func = MSELoss(targets, True)
  
-    model = Model(0, model_config['ignore_threshold'], model_config['pv'])
-    model.train() # set model to training mode
+    trainable_model = Model(opening_length, model_config['ignore_threshold'], model_config['pv'])
+    trainable_model.train() # set model to training mode
 
-    loss_funcs['MM_AE'] = LossWrapper(model, loss, 'MM_AE', super_game)
+    loss_funcs['MM_AE'] = LossWrapper(trainable_model, loss_func, 'MM_AE', super_game)
 
-print(minimize(loss_funcs['ORF'], [0.33, 0.65], bounds = [[0.1, 0.5], [0.3, 0.8]], method='Nelder-Mead', options = {'xatol': 1e-5, 'disp': True}))
-print(minimize(loss_funcs['MM'], [0.33, 0.65], bounds = [[0.1, 0.5], [0.3, 0.8]], method='Nelder-Mead', options = {'xatol': 1e-5, 'disp': True}))
-print(minimize(loss_funcs['AE'], [0.33, 0.65], bounds = [[0.1, 0.5], [0.3, 0.8]], method='Nelder-Mead', options = {'xatol': 1e-5, 'disp': True}))
-print(minimize(loss_funcs['MM_AE'], [0.33, 0.65], bounds = [[0.1, 0.5], [0.3, 0.8]], method='Nelder-Mead', options = {'xatol': 1e-5, 'disp': True}))
+# set optimizer
+optimizer = config['train']['optimizer']
+
+optimizer_config_path = f'{config_dir}/optimizers/{optimizer}.json'
+optimizer_config = utils.load_json(optimizer_config_path)
+
+# set training hyperparameters
+if optimizer == 'nelder-mead':
+    start = optimizer_config['start']
+    s_bounds = optimizer_config['s_bounds']
+    c_bounds = optimizer_config['c_bounds']
+    precision = optimizer_config['precision']
+
+else:
+    print('Currently, only the nelder-mead optimizer is implemented')
+
+if optimizer == 'nelder-mead':
+    print('Training Initiated...')
+
+    for loss in loss_funcs.keys():
+        print(f'  Minimizing {loss} loss...')
+        
+        params = minimize(loss_funcs[loss], start, bounds = [s_bounds, c_bounds], method='Nelder-Mead', options = {'xatol': precision})
+        params = {
+            's': params.x[0],
+            'c': params.x[1]
+                  }
+
+        print(f'    Best Parameters: \n      s: {params['s']}, c: {params['c']}\n')
+
+        with open(f'{config['train']['save_path']}/{loss}.json', 'w') as f:
+            json.dump(params, f)

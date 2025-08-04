@@ -14,9 +14,7 @@
         "opening_length": 5,
         "ignore_threshold": 350,
         "pv": 20,
-        "model_params_path": "model_params/model_params.json",
-        "s": 0.31,
-        "c": 0.65,
+        "model_params_path": "model_params/ORF.json",
         "mm_sd_correctors": [1.14, 1.05, 1.04, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
         "ae_sd_corrector": 1.4
     }

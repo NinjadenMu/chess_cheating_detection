@@ -1,11 +1,12 @@
 from typing import Optional
 
 
+# optimizer can make calls to this by only passing in the model paramters to be fitted
 class LossWrapper:
-    def __init__(self, model, loss, fitting_method, super_game):
+    def __init__(self, model, loss_func, fitting_method, super_game):
         self.model = model
 
-        self.loss = loss
+        self.loss_func = loss_func
         
         self.fitting_method = fitting_method
 
@@ -17,22 +18,23 @@ class LossWrapper:
         if self.fitting_method == 'ORF':
             projections = self.model.project_mms(self.super_game, True)[0]
 
-            return self.loss(projections)
+            return self.loss_func(projections)
         
         elif self.fitting_method == 'MM':
             projections = [self.model.project_mm(self.super_game, True)[0]]
 
-            return self.loss(projections)
+            return self.loss_func(projections)
         
         elif self.fitting_method == 'AE':
             projections = [self.model.project_ae(self.super_game)[0]]
 
-            return self.loss(projections)
+            return self.loss_func(projections)
         
         elif self.fitting_method == 'MM_AE':
             projected_mm_mean, projected_mm_sd = self.model.project_mm(self.super_game, True)
             projected_ae_mean, projected_ae_sd = self.model.project_ae(self.super_game)
-            return self.loss([projected_mm_mean, projected_ae_mean], [projected_mm_sd, projected_ae_sd])
+            
+            return self.loss_func([projected_mm_mean, projected_ae_mean], [projected_mm_sd, projected_ae_sd])
 
 
 class MSELoss:
