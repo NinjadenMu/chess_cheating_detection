@@ -1,7 +1,7 @@
 {
     "data": {
-        "raw_data_path": "anonymized_train_data",
-        "processed_data_path": "processed_train_data",
+        "raw_data_path": "data/anonymized_train_data",
+        "processed_data_path": "data/processed_train_data",
         "data_is_processed": 1
     },
     

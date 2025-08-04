@@ -1,7 +1,7 @@
 {
     "data": {
-        "raw_data_path": "eval_data",
-        "processed_data_path": "processed_eval_data",
+        "raw_data_path": "data/eval_data",
+        "processed_data_path": "data/processed_eval_data",
         "data_is_processed": 1
     },
     
