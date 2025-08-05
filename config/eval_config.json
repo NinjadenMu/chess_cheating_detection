@@ -11,17 +11,18 @@
     },
 
     "model": {
+        "model_params_path": "model_params/2000/ORF.json",
         "opening_length": 5,
         "ignore_threshold": 350,
         "pv": 20,
-        "model_params_path": "model_params/ORF.json",
         "mm_sd_correctors": [1.14, 1.05, 1.04, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
         "ae_sd_corrector": 1.4
     },
 
     "eval": {
+        "player_to_track": "Anon1",
+        "track_opponent": true,
         "check_streaks": 1,
-        "report_aggregate": 1,
         "save_path": "reports/report.json"
     }
 }

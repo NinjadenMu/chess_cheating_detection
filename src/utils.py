@@ -17,10 +17,12 @@ def load_config(config_path):
 
     config = load_json(config_path)
 
+    # make all relative paths in config absolute
     for section in config.keys():
         for field in config[section].keys():
             if 'path' in field:
-                config[section][field] = f'{root}/{config[section][field]}'
+                if config[section][field][0] != '/':
+                    config[section][field] = f'{root}/{config[section][field]}'
 
     return config
 

@@ -1,7 +1,7 @@
 from typing import Optional
 
 
-# optimizer can make calls to this by only passing in the model paramters to be fitted
+# optimizer can make calls to this by only passing in the model parameters to be fitted
 class LossWrapper:
     def __init__(self, model, loss_func, fitting_method, super_game):
         self.model = model

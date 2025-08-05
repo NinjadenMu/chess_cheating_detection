@@ -36,11 +36,17 @@ for data_file in data_files:
             # add all non-opening moves to super game
             super_game.extend(game[config['model']['opening_length'] * 2:])
 
+# create needed directories for saving and logging if they don't exist
 if not os.path.exists(config['train']['log_path']):
     os.makedirs(config['train']['log_path'])
 
-if not os.path.exists(config['train']['save_path']):
-    os.makedirs(config['train']['save_path'])
+# fitted parameters will be stored in a subdirectory of {save_path} with the same name as the train data subdirectory
+# e.g. if the train data is in data/processed_train/2000, the fitted parameters will be in {save_path}/2000
+subdir = config['data']['processed_data_path'].split('/')[-1]
+save_path = f'{config['train']['save_path']}/{subdir}'
+
+if not os.path.exists(save_path):
+    os.makedirs(save_path)
 
 # initialize model
 model_config = config['model']
@@ -120,5 +126,5 @@ if optimizer == 'nelder-mead':
 
         print(f'    Best Parameters: \n      s: {params['s']}, c: {params['c']}\n')
 
-        with open(f'{config['train']['save_path']}/{loss}.json', 'w') as f:
+        with open(f'{save_path}/{loss}.json', 'w') as f:
             json.dump(params, f)
