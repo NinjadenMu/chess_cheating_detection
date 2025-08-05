@@ -17,5 +17,11 @@
         "model_params_path": "model_params/ORF.json",
         "mm_sd_correctors": [1.14, 1.05, 1.04, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
         "ae_sd_corrector": 1.4
+    },
+
+    "eval": {
+        "check_streaks": 1,
+        "report_aggregate": 1,
+        "save_path": "reports/report.json"
     }
 }
