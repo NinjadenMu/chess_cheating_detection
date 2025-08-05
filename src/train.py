@@ -36,18 +36,6 @@ for data_file in data_files:
             # add all non-opening moves to super game
             super_game.extend(game[config['model']['opening_length'] * 2:])
 
-# create needed directories for saving and logging if they don't exist
-if not os.path.exists(config['train']['log_path']):
-    os.makedirs(config['train']['log_path'])
-
-# fitted parameters will be stored in a subdirectory of {save_path} with the same name as the train data subdirectory
-# e.g. if the train data is in data/processed_train/2000, the fitted parameters will be in {save_path}/2000
-subdir = config['data']['processed_data_path'].split('/')[-1]
-save_path = f'{config['train']['save_path']}/{subdir}'
-
-if not os.path.exists(save_path):
-    os.makedirs(save_path)
-
 # initialize model
 model_config = config['model']
 opening_length = 0 # because opening moves were already removed from super_game, the model shouldn't ignore any moves
@@ -56,7 +44,7 @@ model = Model(opening_length, model_config['ignore_threshold'], model_config['pv
 # build loss functions for each specified loss
 loss_funcs = {}
 
-if config['train']['ORF']:
+if config['train']['losses']['ORF']:
     targets = model.calculate_mms(super_game, True)
 
     loss_func = MSELoss(targets, False)
@@ -66,7 +54,7 @@ if config['train']['ORF']:
 
     loss_funcs['ORF'] = LossWrapper(trainable_model, loss_func, 'ORF', super_game)
 
-if config['train']['MM']:
+if config['train']['losses']['MM']:
     targets = [model.calculate_mm(super_game, True)]
 
     loss_func = MSELoss(targets, False)
@@ -76,7 +64,7 @@ if config['train']['MM']:
 
     loss_funcs['MM'] = LossWrapper(trainable_model, loss_func, 'MM', super_game)
 
-if config['train']['AE']:
+if config['train']['losses']['AE']:
     targets = [model.calculate_ae(super_game)]
 
     loss_func = MSELoss(targets, False)
@@ -86,7 +74,7 @@ if config['train']['AE']:
 
     loss_funcs['AE'] = LossWrapper(trainable_model, loss_func, 'AE', super_game)
 
-if config['train']['MM_AE']:
+if config['train']['losses']['MM_AE']:
     targets = [model.calculate_mm(super_game, True), model.calculate_ae(super_game)]
 
     loss_func = MSELoss(targets, True)
@@ -112,6 +100,14 @@ if optimizer == 'nelder-mead':
 else:
     print('Currently, only the nelder-mead optimizer is implemented')
 
+# fitted parameters will be stored in a file named {data directory name}_{loss type}.json
+# e.g. if the data is in data/processed_data/2000 and ORF is used, the parameters will be in {save_path}/2000_ORF.json
+data_name = config['data']['processed_data_path'].split('/')[-1]
+save_path = f'{config['train']['save_path']}'
+
+if not os.path.exists(save_path):
+    os.makedirs(save_path)
+
 if optimizer == 'nelder-mead':
     print('Training Initiated...')
 
@@ -126,5 +122,5 @@ if optimizer == 'nelder-mead':
 
         print(f'    Best Parameters: \n      s: {params['s']}, c: {params['c']}\n')
 
-        with open(f'{save_path}/{loss}.json', 'w') as f:
+        with open(f'{save_path}/{data_name}_{loss}.json', 'w') as f:
             json.dump(params, f)

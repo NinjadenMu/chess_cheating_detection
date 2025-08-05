@@ -17,12 +17,13 @@
     },
 
     "train": {
+        "save_path": "model_params",
         "optimizer": "nelder-mead",
-        "ORF": 1,
-        "MM": 1,
-        "AE": 1,
-        "MM_AE": 1,
-        "log_path": "logs",
-        "save_path": "model_params"
+        "losses": {
+            "ORF": 1,
+            "MM": 1,
+            "AE": 1,
+            "MM_AE": 1
+        }
     }
 }
